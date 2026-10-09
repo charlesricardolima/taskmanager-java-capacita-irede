@@ -27,6 +27,16 @@
     <center>
         <VBox spacing="10" styleClass="conteudo">
 
+            <HBox spacing="10" styleClass="barra-filtros">
+                <Label text="Status:"/>
+                <ComboBox fx:id="comboFiltroStatus"/>
+
+                <Label text="Prioridade:"/>
+                <ComboBox fx:id="comboFiltroPrioridade"/>
+
+                <Button text="Limpar filtros" onAction="#limparFiltros"/>
+            </HBox>
+
             <TableView fx:id="tabelaTarefas" prefHeight="300">
                 <columns>
                     <TableColumn fx:id="colunaId" text="ID" prefWidth="60"/>

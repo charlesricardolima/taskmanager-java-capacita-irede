@@ -4,6 +4,7 @@ import br.com.charles.taskmanager.exceptions.TarefaNaoEncontradaException;
 import br.com.charles.taskmanager.model.Tarefa;
 import br.com.charles.taskmanager.model.TarefaPrioritaria;
 import br.com.charles.taskmanager.service.TarefaService;
+import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -54,6 +55,12 @@ public class TarefaController {
     @FXML
     private ComboBox<String> comboPrioridade;
 
+    @FXML
+    private ComboBox<String> comboFiltroStatus;
+
+    @FXML
+    private ComboBox<String> comboFiltroPrioridade;
+
     private TarefaService tarefaService;
 
     public TarefaController() {
@@ -61,13 +68,14 @@ public class TarefaController {
     }
 
     // Metodo executado automaticamente quando a tela FXML e carregada.
-    // Configura a tabela, carrega as prioridades, prepara a selecao da tabela
+    // Configura a tabela, os combos, os filtros, a selecao da tabela
     // e busca as tarefas do banco.
     @FXML
     public void initialize() {
         configurarTabela();
         configurarComboPrioridade();
         configurarControlePrioridade();
+        configurarFiltros();
         configurarSelecaoTabela();
         carregarTarefas();
     }
@@ -98,7 +106,7 @@ public class TarefaController {
         });
     }
 
-    // Configura as opcoes fixas de prioridade no ComboBox.
+    // Configura as opcoes fixas de prioridade no ComboBox do formulario.
     // Isso evita digitacao livre e padroniza os dados salvos no banco.
     private void configurarComboPrioridade() {
         comboPrioridade.setItems(
@@ -119,6 +127,23 @@ public class TarefaController {
                 comboPrioridade.getSelectionModel().clearSelection();
             }
         });
+    }
+
+    // Configura os filtros de status e prioridade da tabela.
+    private void configurarFiltros() {
+        comboFiltroStatus.setItems(
+                FXCollections.observableArrayList("Todos", "Pendentes", "Concluidas")
+        );
+
+        comboFiltroPrioridade.setItems(
+                FXCollections.observableArrayList("Todas", "Baixa", "Media", "Alta", "Sem prioridade")
+        );
+
+        comboFiltroStatus.setValue("Todos");
+        comboFiltroPrioridade.setValue("Todas");
+
+        comboFiltroStatus.setOnAction(event -> carregarTarefas());
+        comboFiltroPrioridade.setOnAction(event -> carregarTarefas());
     }
 
     // Preenche os campos do formulario quando o usuario seleciona uma tarefa na tabela.
@@ -147,12 +172,66 @@ public class TarefaController {
         );
     }
 
-    // Carrega as tarefas salvas no banco SQLite e exibe na tabela.
+    // Carrega as tarefas salvas no banco SQLite, aplica os filtros e exibe na tabela.
     @FXML
     public void carregarTarefas() {
+        List<Tarefa> tarefasFiltradas = tarefaService.listarTarefas()
+                .stream()
+                .filter(this::filtrarPorStatus)
+                .filter(this::filtrarPorPrioridade)
+                .toList();
+
         tabelaTarefas.setItems(
-                FXCollections.observableArrayList(tarefaService.listarTarefas())
+                FXCollections.observableArrayList(tarefasFiltradas)
         );
+    }
+
+    // Aplica o filtro de status selecionado.
+    private boolean filtrarPorStatus(Tarefa tarefa) {
+        String filtro = comboFiltroStatus.getValue();
+
+        if (filtro == null || filtro.equals("Todos")) {
+            return true;
+        }
+
+        if (filtro.equals("Pendentes")) {
+            return !tarefa.isConcluida();
+        }
+
+        if (filtro.equals("Concluidas")) {
+            return tarefa.isConcluida();
+        }
+
+        return true;
+    }
+
+    // Aplica o filtro de prioridade selecionado.
+    private boolean filtrarPorPrioridade(Tarefa tarefa) {
+        String filtro = comboFiltroPrioridade.getValue();
+
+        if (filtro == null || filtro.equals("Todas")) {
+            return true;
+        }
+
+        boolean tarefaPrioritaria = tarefa instanceof TarefaPrioritaria;
+
+        if (filtro.equals("Sem prioridade")) {
+            return !tarefaPrioritaria;
+        }
+
+        if (tarefa instanceof TarefaPrioritaria tarefaPrioritariaSelecionada) {
+            return tarefaPrioritariaSelecionada.getPrioridade().equals(filtro);
+        }
+
+        return false;
+    }
+
+    // Limpa os filtros e recarrega a tabela.
+    @FXML
+    public void limparFiltros() {
+        comboFiltroStatus.setValue("Todos");
+        comboFiltroPrioridade.setValue("Todas");
+        carregarTarefas();
     }
 
     // Cadastra uma nova tarefa comum ou prioritaria a partir dos campos da tela.
