@@ -9,7 +9,7 @@ import br.com.charles.taskmanager.db.Conexao;
  * @author Charles Ricardo
  */
 
-import br.com.charles.taskmanager.controller.TaskManager;
+import br.com.charles.taskmanager.service.TarefaService;
 import br.com.charles.taskmanager.exceptions.TarefaNaoEncontradaException;
 import br.com.charles.taskmanager.model.Tarefa;
 import java.util.Scanner;
@@ -19,8 +19,7 @@ import java.util.Scanner;
 public class App {
 
     private static Scanner scanner = new Scanner(System.in);
-    private static TaskManager taskManager = new TaskManager();
-    
+    private static TarefaService tarefaService = new TarefaService();
 // Metodo principal que mantem o sistema em execucao
 // ate que o usuario escolha a opcao de sair.
     public static void main(String[] args) {
@@ -95,13 +94,13 @@ public class App {
         String descricao = scanner.nextLine();
 
         if (tipo == 1) {
-            taskManager.adicionarTarefa(titulo, descricao);
+            tarefaService.adicionarTarefa(titulo, descricao);
             System.out.println("Tarefa comum cadastrada com sucesso.");
         } else {
             System.out.print("Digite a prioridade da tarefa: ");
             String prioridade = scanner.nextLine();
 
-            taskManager.adicionarTarefaPrioritaria(titulo, descricao, prioridade);
+            tarefaService.adicionarTarefaPrioritaria(titulo, descricao, prioridade);
             System.out.println("Tarefa prioritaria cadastrada com sucesso.");
         }
     }
@@ -109,25 +108,25 @@ public class App {
     private static void listarTarefas() {
         System.out.println("===== LISTA DE TAREFAS =====");
 
-        if (!taskManager.possuiTarefas()) {
+        if (!tarefaService.possuiTarefas()) {
             System.out.println("Nenhuma tarefa cadastrada.");
             return;
         }
 
-        for (Tarefa tarefa : taskManager.listarTarefas()) {
+        for (Tarefa tarefa : tarefaService.listarTarefas()) {
             System.out.println(tarefa);
         }
     }
 
     private static void concluirTarefa() throws TarefaNaoEncontradaException {
         int id = lerInteiro("Digite o ID da tarefa que deseja concluir: ");
-        taskManager.concluirTarefa(id);
+        tarefaService.concluirTarefa(id);
         System.out.println("Tarefa marcada como concluida.");
     }
 
     private static void removerTarefa() throws TarefaNaoEncontradaException {
         int id = lerInteiro("Digite o ID da tarefa que deseja remover: ");
-        taskManager.removerTarefa(id);
+        tarefaService.removerTarefa(id);
         System.out.println("Tarefa removida com sucesso.");
     }
 
