@@ -189,6 +189,53 @@ public class TarefaDAO {
         }
     }
 
+    // Atualiza os dados principais de uma tarefa existente.
+    // Esse metodo completa o CRUD, permitindo editar titulo, descricao, status e prioridade.
+    public void atualizar(Tarefa tarefa) throws TarefaNaoEncontradaException {
+        String sql = """
+            UPDATE tarefas
+            SET titulo = ?, descricao = ?, concluida = ?, prioridade = ?
+            WHERE id = ?;
+        """;
+
+        Connection conexao = null;
+
+        try {
+            conexao = obterConexao();
+
+            try (PreparedStatement statement = conexao.prepareStatement(sql)) {
+                statement.setString(1, tarefa.getTitulo());
+                statement.setString(2, tarefa.getDescricao());
+                statement.setInt(3, tarefa.isConcluida() ? 1 : 0);
+
+                if (tarefa instanceof TarefaPrioritaria tarefaPrioritaria) {
+                    statement.setString(4, tarefaPrioritaria.getPrioridade());
+                } else {
+                    statement.setString(4, null);
+                }
+
+                statement.setInt(5, tarefa.getId());
+
+                int linhasAfetadas = statement.executeUpdate();
+
+                if (linhasAfetadas == 0) {
+                    throw new TarefaNaoEncontradaException(
+                            "Nenhuma tarefa encontrada com o ID " + tarefa.getId() + "."
+                    );
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Erro ao atualizar tarefa: " + e.getMessage());
+        } finally {
+            try {
+                fecharConexaoSeNecessario(conexao);
+            } catch (SQLException e) {
+                System.out.println("Erro ao fechar conexao: " + e.getMessage());
+            }
+        }
+    }
+
     // Remove uma tarefa do banco de dados com base no ID informado.
     public void remover(int id) throws TarefaNaoEncontradaException {
         String sql = """

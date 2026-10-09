@@ -99,6 +99,22 @@ public class TarefaDAOTest {
         assertTrue(tarefaConcluida.isConcluida());
     }
 
+    // Verifica se o DAO atualiza corretamente os dados de uma tarefa.
+    @Test
+    public void deveAtualizarTarefa() throws TarefaNaoEncontradaException {
+        Tarefa tarefa = new Tarefa(0, "Titulo antigo", "Descricao antiga");
+
+        tarefaDAO.inserir(tarefa);
+
+        Tarefa tarefaAtualizada = new Tarefa(1, "Titulo novo", "Descricao nova");
+        tarefaDAO.atualizar(tarefaAtualizada);
+
+        Tarefa tarefaEncontrada = tarefaDAO.buscarPorId(1);
+
+        assertEquals("Titulo novo", tarefaEncontrada.getTitulo());
+        assertEquals("Descricao nova", tarefaEncontrada.getDescricao());
+    }
+
     // Verifica se o DAO remove uma tarefa corretamente.
     @Test
     public void deveRemoverTarefa() throws TarefaNaoEncontradaException {

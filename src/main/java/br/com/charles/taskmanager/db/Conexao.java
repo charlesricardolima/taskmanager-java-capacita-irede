@@ -25,7 +25,7 @@ public class Conexao {
     }
 
     // Cria a tabela de tarefas usando uma conexao recebida por parametro.
-    // Esse metodo sera usado nos testes com SQLite em memoria.
+    // Esse metodo e usado nos testes com SQLite em memoria.
     public static void criarTabelaTarefas(Connection conexao) {
         String sql = """
             CREATE TABLE IF NOT EXISTS tarefas (

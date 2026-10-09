@@ -61,12 +61,14 @@ public class TarefaController {
     }
 
     // Metodo executado automaticamente quando a tela FXML e carregada.
-    // Configura a tabela, carrega as prioridades e busca as tarefas do banco.
+    // Configura a tabela, carrega as prioridades, prepara a selecao da tabela
+    // e busca as tarefas do banco.
     @FXML
     public void initialize() {
         configurarTabela();
         configurarComboPrioridade();
         configurarControlePrioridade();
+        configurarSelecaoTabela();
         carregarTarefas();
     }
 
@@ -119,6 +121,32 @@ public class TarefaController {
         });
     }
 
+    // Preenche os campos do formulario quando o usuario seleciona uma tarefa na tabela.
+    // Isso facilita a edicao dos dados cadastrados.
+    private void configurarSelecaoTabela() {
+        tabelaTarefas.getSelectionModel().selectedItemProperty().addListener(
+                (observable, tarefaAnterior, tarefaSelecionada) -> {
+
+                    if (tarefaSelecionada == null) {
+                        return;
+                    }
+
+                    campoTitulo.setText(tarefaSelecionada.getTitulo());
+                    campoDescricao.setText(tarefaSelecionada.getDescricao());
+
+                    if (tarefaSelecionada instanceof TarefaPrioritaria tarefaPrioritaria) {
+                        checkPrioritaria.setSelected(true);
+                        comboPrioridade.setDisable(false);
+                        comboPrioridade.setValue(tarefaPrioritaria.getPrioridade());
+                    } else {
+                        checkPrioritaria.setSelected(false);
+                        comboPrioridade.getSelectionModel().clearSelection();
+                        comboPrioridade.setDisable(true);
+                    }
+                }
+        );
+    }
+
     // Carrega as tarefas salvas no banco SQLite e exibe na tabela.
     @FXML
     public void carregarTarefas() {
@@ -146,6 +174,39 @@ public class TarefaController {
             mostrarInformacao("Tarefa cadastrada com sucesso.");
 
         } catch (IllegalArgumentException e) {
+            mostrarErro(e.getMessage());
+        }
+    }
+
+    // Edita a tarefa selecionada na tabela usando os dados informados no formulario.
+    @FXML
+    public void editarTarefa() {
+        Tarefa tarefaSelecionada = tabelaTarefas.getSelectionModel().getSelectedItem();
+
+        if (tarefaSelecionada == null) {
+            mostrarErro("Selecione uma tarefa para editar.");
+            return;
+        }
+
+        try {
+            String titulo = campoTitulo.getText();
+            String descricao = campoDescricao.getText();
+            boolean prioritaria = checkPrioritaria.isSelected();
+            String prioridade = comboPrioridade.getValue();
+
+            tarefaService.atualizarTarefa(
+                    tarefaSelecionada.getId(),
+                    titulo,
+                    descricao,
+                    prioritaria,
+                    prioridade
+            );
+
+            limparCampos();
+            carregarTarefas();
+            mostrarInformacao("Tarefa atualizada com sucesso.");
+
+        } catch (IllegalArgumentException | TarefaNaoEncontradaException e) {
             mostrarErro(e.getMessage());
         }
     }
@@ -199,7 +260,7 @@ public class TarefaController {
         });
     }
 
-    // Limpa os campos do formulario.
+    // Limpa os campos do formulario e remove a selecao da tabela.
     @FXML
     public void limparCampos() {
         campoTitulo.clear();
@@ -207,6 +268,7 @@ public class TarefaController {
         comboPrioridade.getSelectionModel().clearSelection();
         comboPrioridade.setDisable(true);
         checkPrioritaria.setSelected(false);
+        tabelaTarefas.getSelectionModel().clearSelection();
     }
 
     // Exibe mensagem informativa para o usuario.

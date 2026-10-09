@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -11,7 +12,6 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.ComboBox?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="br.com.charles.taskmanager.controller.TarefaController"
@@ -40,25 +40,33 @@
 
             <GridPane hgap="10" vgap="10" styleClass="formulario">
                 <Label text="Titulo:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                <TextField fx:id="campoTitulo" promptText="Digite o titulo da tarefa"
-                           GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                <TextField fx:id="campoTitulo"
+                           promptText="Digite o titulo da tarefa"
+                           GridPane.rowIndex="0"
+                           GridPane.columnIndex="1"/>
 
                 <Label text="Descricao:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                <TextArea fx:id="campoDescricao" promptText="Digite a descricao da tarefa"
+                <TextArea fx:id="campoDescricao"
+                          promptText="Digite a descricao da tarefa"
                           prefRowCount="3"
-                          GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                          GridPane.rowIndex="1"
+                          GridPane.columnIndex="1"/>
 
-                <CheckBox fx:id="checkPrioritaria" text="Tarefa prioritaria"
-                          GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                <CheckBox fx:id="checkPrioritaria"
+                          text="Tarefa prioritaria"
+                          GridPane.rowIndex="2"
+                          GridPane.columnIndex="1"/>
 
                 <Label text="Prioridade:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
                 <ComboBox fx:id="comboPrioridade"
-          promptText="Selecione a prioridade"
-          GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                          promptText="Selecione a prioridade"
+                          GridPane.rowIndex="3"
+                          GridPane.columnIndex="1"/>
             </GridPane>
 
             <HBox spacing="10" styleClass="barra-botoes">
                 <Button text="Adicionar" onAction="#adicionarTarefa"/>
+                <Button text="Editar" onAction="#editarTarefa"/>
                 <Button text="Marcar como concluida" onAction="#concluirTarefa"/>
                 <Button text="Remover" onAction="#removerTarefa"/>
                 <Button text="Limpar campos" onAction="#limparCampos"/>

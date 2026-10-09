@@ -47,6 +47,30 @@ public class TarefaService {
         tarefaDAO.concluir(id);
     }
 
+    // Atualiza uma tarefa existente apos validar os dados informados.
+    // Permite transformar uma tarefa comum em prioritaria e tambem o contrario.
+    public void atualizarTarefa(int id, String titulo, String descricao, boolean prioritaria, String prioridade)
+            throws TarefaNaoEncontradaException {
+
+        ValidadorEntrada.validarTextoObrigatorio(titulo, "titulo");
+        ValidadorEntrada.validarTextoObrigatorio(descricao, "descricao");
+
+        Tarefa tarefaExistente = tarefaDAO.buscarPorId(id);
+
+        Tarefa tarefaAtualizada;
+
+        if (prioritaria) {
+            ValidadorEntrada.validarTextoObrigatorio(prioridade, "prioridade");
+            tarefaAtualizada = new TarefaPrioritaria(id, titulo, descricao, prioridade);
+        } else {
+            tarefaAtualizada = new Tarefa(id, titulo, descricao);
+        }
+
+        tarefaAtualizada.setConcluida(tarefaExistente.isConcluida());
+
+        tarefaDAO.atualizar(tarefaAtualizada);
+    }
+
     // Remove uma tarefa do banco de dados a partir do ID informado.
     public void removerTarefa(int id) throws TarefaNaoEncontradaException {
         tarefaDAO.remover(id);
