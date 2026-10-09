@@ -3,7 +3,7 @@
  */
 
 package br.com.charles.taskmanager.app;
-
+import br.com.charles.taskmanager.db.Conexao;
 /**
  *
  * @author Charles Ricardo
@@ -24,6 +24,8 @@ public class App {
 // Metodo principal que mantem o sistema em execucao
 // ate que o usuario escolha a opcao de sair.
     public static void main(String[] args) {
+        Conexao.criarTabelaTarefas();
+        
         int opcao = 0;
 
         do {
