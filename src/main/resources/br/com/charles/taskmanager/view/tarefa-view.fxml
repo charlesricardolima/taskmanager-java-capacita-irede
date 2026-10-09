@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ComboBox?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="br.com.charles.taskmanager.controller.TarefaController"
@@ -51,8 +52,9 @@
                           GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
                 <Label text="Prioridade:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                <TextField fx:id="campoPrioridade" promptText="Ex: Alta, Media ou Baixa"
-                           GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                <ComboBox fx:id="comboPrioridade"
+          promptText="Selecione a prioridade"
+          GridPane.rowIndex="3" GridPane.columnIndex="1"/>
             </GridPane>
 
             <HBox spacing="10" styleClass="barra-botoes">

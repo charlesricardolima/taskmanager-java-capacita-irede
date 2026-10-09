@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -51,7 +52,7 @@ public class TarefaController {
     private CheckBox checkPrioritaria;
 
     @FXML
-    private TextField campoPrioridade;
+    private ComboBox<String> comboPrioridade;
 
     private TarefaService tarefaService;
 
@@ -60,10 +61,12 @@ public class TarefaController {
     }
 
     // Metodo executado automaticamente quando a tela FXML e carregada.
-    // Configura as colunas da tabela e carrega as tarefas do banco.
+    // Configura a tabela, carrega as prioridades e busca as tarefas do banco.
     @FXML
     public void initialize() {
         configurarTabela();
+        configurarComboPrioridade();
+        configurarControlePrioridade();
         carregarTarefas();
     }
 
@@ -93,6 +96,29 @@ public class TarefaController {
         });
     }
 
+    // Configura as opcoes fixas de prioridade no ComboBox.
+    // Isso evita digitacao livre e padroniza os dados salvos no banco.
+    private void configurarComboPrioridade() {
+        comboPrioridade.setItems(
+                FXCollections.observableArrayList("Baixa", "Media", "Alta")
+        );
+    }
+
+    // Habilita o ComboBox de prioridade apenas quando a tarefa for prioritaria.
+    private void configurarControlePrioridade() {
+        comboPrioridade.setDisable(true);
+
+        checkPrioritaria.setOnAction(event -> {
+            boolean prioritaria = checkPrioritaria.isSelected();
+
+            comboPrioridade.setDisable(!prioritaria);
+
+            if (!prioritaria) {
+                comboPrioridade.getSelectionModel().clearSelection();
+            }
+        });
+    }
+
     // Carrega as tarefas salvas no banco SQLite e exibe na tabela.
     @FXML
     public void carregarTarefas() {
@@ -109,7 +135,7 @@ public class TarefaController {
             String descricao = campoDescricao.getText();
 
             if (checkPrioritaria.isSelected()) {
-                String prioridade = campoPrioridade.getText();
+                String prioridade = comboPrioridade.getValue();
                 tarefaService.adicionarTarefaPrioritaria(titulo, descricao, prioridade);
             } else {
                 tarefaService.adicionarTarefa(titulo, descricao);
@@ -178,7 +204,8 @@ public class TarefaController {
     public void limparCampos() {
         campoTitulo.clear();
         campoDescricao.clear();
-        campoPrioridade.clear();
+        comboPrioridade.getSelectionModel().clearSelection();
+        comboPrioridade.setDisable(true);
         checkPrioritaria.setSelected(false);
     }
 
