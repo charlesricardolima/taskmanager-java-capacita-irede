@@ -1,0 +1,26 @@
+.root {
+    -fx-font-family: "Arial";
+    -fx-font-size: 14px;
+}
+
+.cabecalho {
+    -fx-padding: 16px;
+    -fx-alignment: center;
+}
+
+.titulo-principal {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.conteudo {
+    -fx-padding: 16px;
+}
+
+.formulario {
+    -fx-padding: 10px;
+}
+
+.barra-botoes {
+    -fx-padding: 10px 0 0 0;
+}
